@@ -15,15 +15,17 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.example.projectui.databinding.FragmentSecondBinding;
+import com.example.projectui.enums.Country;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class SecondFragment extends Fragment {
 
     private FragmentSecondBinding binding;
 
-    ListView listView;
+    private ListView listView;
+    private Country currentSelectedCountry;
 
     @Override
     public View onCreateView(
@@ -40,9 +42,7 @@ public class SecondFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         Context currentContext = getActivity().getApplicationContext();
 
-        List<String> availableCountries = new ArrayList<>();
-        availableCountries.add("Mauritius");
-
+        List<Country> availableCountries = Arrays.asList(Country.values());
 
         ArrayAdapter arrayAdapter = new ArrayAdapter(currentContext, android.R.layout.simple_list_item_1, availableCountries);
 
@@ -53,15 +53,28 @@ public class SecondFragment extends Fragment {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Toast.makeText(currentContext, "Choose :" + arrayAdapter.getItem(i), Toast.LENGTH_LONG).show();
+                currentSelectedCountry = Country.valueOf(arrayAdapter.getItem(i).toString());
+                Toast.makeText(currentContext, currentSelectedCountry.getUrl(), Toast.LENGTH_SHORT).show();
             }
         });
 
-        binding.buttonSecond.setOnClickListener(new View.OnClickListener() {
+        binding.buttonLogout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 NavHostFragment.findNavController(SecondFragment.this)
                         .navigate(R.id.action_SecondFragment_to_FirstFragment);
+            }
+        });
+
+        binding.buttonNext.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (currentSelectedCountry != null) {
+                    NavHostFragment.findNavController(SecondFragment.this)
+                            .navigate(R.id.action_SecondFragment_to_FisheringMadeFragment);
+                } else {
+                    Toast.makeText(currentContext, "Please choose a Country first.", Toast.LENGTH_SHORT).show();
+                }
             }
         });
     }

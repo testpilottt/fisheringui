@@ -24,5 +24,31 @@
         <action
             android:id="@+id/action_SecondFragment_to_FirstFragment"
             app:destination="@id/FirstFragment" />
+        <action
+            android:id="@+id/action_SecondFragment_to_FisheringMadeFragment"
+            app:destination="@id/FisheringMadeFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/FisheringMadeFragment"
+        android:name="com.example.projectui.FisheringMadeFragment"
+        android:label="FisheringMadeFragment"
+        tools:layout="@layout/fisheringmade_fragment">
+
+        <action
+            android:id="@+id/action_FisheringMadeFragment_to_SecondFragment"
+            app:destination="@id/SecondFragment" />
+        <action
+            android:id="@+id/action_FisheringMadeFragment_to_CreateFisheringMadeFragment"
+            app:destination="@id/CreateFisheringMadeFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/CreateFisheringMadeFragment"
+        android:name="com.example.projectui.CreateFisheringMadeFragment"
+        android:label="CreateFisheringMadeFragment"
+        tools:layout="@layout/createfishringmade_fragment">
+
+        <action
+            android:id="@+id/action_CreateFisheringMadeFragment_to_FisheringMadeFragment"
+            app:destination="@id/FisheringMadeFragment" />
     </fragment>
 </navigation>

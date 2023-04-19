@@ -1,7 +1,6 @@
 package com.example.projectui.service;
 
 import static com.example.projectui.MainActivity.JSON;
-import static com.example.projectui.MainActivity.POST_MEMBERLOGIN;
 
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
@@ -12,7 +11,10 @@ import org.json.simple.JSONObject;
 
 import java.io.IOException;
 
-public class restApiCallServiceImpl implements restApiCallService {
+public class RestApiCallServiceImpl implements RestApiCallService {
+
+    public static final String POST_MEMBERLOGIN = "http://10.0.2.2:8080/fishery/membersLogin";
+    public static final String GET_FISHERINGMADE = "http://10.0.2.2:8080/fishery/retrieveFisheringRecord";
 
     @Override
     public JSONObject sendPostRequest(String url, JSONObject jsonObject) {
@@ -22,12 +24,38 @@ public class restApiCallServiceImpl implements restApiCallService {
         RequestBody requestBody = RequestBody.create(JSON, jsonObject.toJSONString());
 
         Request postRequest = new Request.Builder()
-                .url(POST_MEMBERLOGIN)
+                .url(url)
                 .post(requestBody)
                 .build();
 
         try {
             Response response = client.newCall(postRequest).execute();
+
+            JSONObject returnJsonObject = new JSONObject();
+
+            returnJsonObject.put("code", response.code());
+            returnJsonObject.put("body", response.body().string());
+
+            return returnJsonObject;
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+    @Override
+    public JSONObject sendGetRequest(String url, JSONObject jsonObject) {
+        OkHttpClient client = new OkHttpClient();
+
+        Request getRequest = new Request.Builder()
+                .url(url + jsonObject.get("value"))
+                .get()
+                .build();
+
+        try {
+            Response response = client.newCall(getRequest).execute();
 
             JSONObject returnJsonObject = new JSONObject();
 

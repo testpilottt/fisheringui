@@ -21,8 +21,6 @@ public class MainActivity extends AppCompatActivity {
     private AppBarConfiguration appBarConfiguration;
     private ActivityMainBinding binding;
 
-    public static final String POST_MEMBERLOGIN = "http://10.0.2.2:8080/fishery/membersLogin";
-
     public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
 
     @Override

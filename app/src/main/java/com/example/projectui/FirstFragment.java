@@ -1,6 +1,6 @@
 package com.example.projectui;
 
-import static com.example.projectui.MainActivity.POST_MEMBERLOGIN;
+import static com.example.projectui.service.RestApiCallServiceImpl.POST_MEMBERLOGIN;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -13,7 +13,7 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.example.projectui.databinding.FragmentFirstBinding;
-import com.example.projectui.service.restApiCallServiceImpl;
+import com.example.projectui.service.RestApiCallServiceImpl;
 import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
 
@@ -24,8 +24,7 @@ import java.util.Objects;
 public class FirstFragment extends Fragment {
 
     private FragmentFirstBinding binding;
-    EditText loginUsername, loginPassword;
-
+    private EditText loginUsername, loginPassword;
 
     @Override
     public View onCreateView(
@@ -41,9 +40,6 @@ public class FirstFragment extends Fragment {
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        restApiCallServiceImpl restApiCallService = new restApiCallServiceImpl();
-
-
         loginUsername = (EditText) getView().findViewById(R.id.loginUsername);
         loginPassword = (EditText) getView().findViewById(R.id.loginPassword);
          //TODO: remove set text
@@ -57,7 +53,7 @@ public class FirstFragment extends Fragment {
                 JSONObject jsonObject = new JSONObject();
                 jsonObject.put("username", loginUsername.getText().toString());
                 jsonObject.put("password", loginPassword.getText().toString());
-
+                RestApiCallServiceImpl restApiCallService = new RestApiCallServiceImpl();
                 JSONObject returnJsonObject = restApiCallService.sendPostRequest(POST_MEMBERLOGIN, jsonObject);
                 Snackbar mySnackbar = Snackbar.make(view, "Login failed, please try again.", BaseTransientBottomBar.LENGTH_LONG);
 
@@ -69,9 +65,15 @@ public class FirstFragment extends Fragment {
 
                     if (httpResponseCode.equals("401")) {
                         mySnackbar.show();
+                    } else if (httpResponseCode.equals("404")) {
+                        mySnackbar = Snackbar.make(view, "Unexpected error, check network and try again!", BaseTransientBottomBar.LENGTH_LONG);
+                        mySnackbar.show();
                     } else if (httpResponseCode.equals("202")) {
                         mySnackbar = Snackbar.make(view, "Login successful!", BaseTransientBottomBar.LENGTH_LONG);
                         mySnackbar.show();
+                        Bundle bundleFromLoginFragment = new Bundle();
+                        bundleFromLoginFragment.putLong("memberId", Long.parseLong(returnJsonObject.get("body").toString()));
+                        getParentFragmentManager().setFragmentResult("bundleFromLoginFragment", bundleFromLoginFragment);
 
                         NavHostFragment.findNavController(FirstFragment.this)
                                 .navigate(R.id.action_FirstFragment_to_SecondFragment);

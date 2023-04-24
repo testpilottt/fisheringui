@@ -55,26 +55,22 @@ public class SecondFragment extends Fragment {
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 currentSelectedCountry = Country.valueOf(arrayAdapter.getItem(i).toString());
                 Toast.makeText(currentContext, currentSelectedCountry.getUrl(), Toast.LENGTH_SHORT).show();
+
+                Bundle bundleFromChooseCountryFragment = new Bundle();
+                bundleFromChooseCountryFragment.putString("country", currentSelectedCountry.getUrl());
+                getParentFragmentManager().setFragmentResult("bundleFromChooseCountryFragment", bundleFromChooseCountryFragment);
             }
         });
 
-        binding.buttonLogout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+        binding.buttonLogout.setOnClickListener(view1 -> NavHostFragment.findNavController(SecondFragment.this)
+                .navigate(R.id.action_SecondFragment_to_FirstFragment));
+
+        binding.buttonNext.setOnClickListener(view12 -> {
+            if (currentSelectedCountry != null) {
                 NavHostFragment.findNavController(SecondFragment.this)
-                        .navigate(R.id.action_SecondFragment_to_FirstFragment);
-            }
-        });
-
-        binding.buttonNext.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (currentSelectedCountry != null) {
-                    NavHostFragment.findNavController(SecondFragment.this)
-                            .navigate(R.id.action_SecondFragment_to_FisheringMadeFragment);
-                } else {
-                    Toast.makeText(currentContext, "Please choose a Country first.", Toast.LENGTH_SHORT).show();
-                }
+                        .navigate(R.id.action_SecondFragment_to_FisheringMadeFragment);
+            } else {
+                Toast.makeText(currentContext, "Please choose a Country first.", Toast.LENGTH_SHORT).show();
             }
         });
     }

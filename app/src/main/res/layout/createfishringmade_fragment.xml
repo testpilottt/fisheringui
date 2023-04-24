@@ -7,26 +7,154 @@
     tools:context=".CreateFisheringMadeFragment">
 
 
-    <EditText
-        android:id="@+id/txtCountry"
+    <Button
+        android:id="@+id/button_registercatch"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:ems="10"
-        android:inputType="text"
-        android:text="Country"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:layout_marginEnd="40dp"
+        android:text="Register Catch"
+        app:layout_constraintBaseline_toBaselineOf="@+id/button_Back"
+        app:layout_constraintEnd_toEndOf="parent" />
 
     <Button
         android:id="@+id/buttonGetLocation"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Button"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginStart="6dp"
+        android:layout_marginTop="11dp"
+        android:text="Add current location"
+        app:layout_constraintStart_toStartOf="@+id/button_Back"
+        app:layout_constraintTop_toBottomOf="@+id/input_location" />
+
+    <TextView
+        android:id="@+id/textView5"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="6dp"
+        android:layout_marginTop="12dp"
+        android:maxLines="2"
+        android:text="Location:"
+        app:layout_constraintStart_toStartOf="@+id/textView4"
+        app:layout_constraintTop_toBottomOf="@+id/input_weightkg" />
+
+    <com.google.android.material.textfield.TextInputEditText
+        android:id="@+id/input_location"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:hint="Press button to add location"
+        android:maxLines="2"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/txtCountry" />
+        app:layout_constraintTop_toBottomOf="@+id/textView5" />
 
+    <TextView
+        android:id="@+id/textView4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:text="Weight in KG:"
+        app:layout_constraintBottom_toTopOf="@+id/input_weightkg"
+        app:layout_constraintStart_toStartOf="@+id/textView3" />
+
+    <TextView
+        android:id="@+id/textView3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="22dp"
+        android:layout_marginBottom="7dp"
+        android:text="Type of fish:"
+        app:layout_constraintBottom_toTopOf="@+id/spinner_typeOfFish"
+        app:layout_constraintStart_toStartOf="@+id/button_addPicture" />
+
+    <Button
+        android:id="@+id/button_Back"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="30dp"
+        android:layout_marginBottom="41dp"
+        android:text="Back"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/button_registercatch" />
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="322dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="13dp"
+        android:layout_marginEnd="28dp"
+        android:layout_marginBottom="14dp"
+        app:layout_constraintBottom_toTopOf="@+id/button_addPicture"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView2"
+        tools:src="@tools:sample/backgrounds/scenic" />
+
+    <com.google.android.material.textfield.TextInputEditText
+        android:id="@+id/input_weightkg"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="278dp"
+        android:hint="Weight in KG"
+        android:inputType="number|numberDecimal"
+        android:maxLines="1"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
+        android:id="@+id/button_addPicture"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="128dp"
+        android:layout_marginEnd="128dp"
+        android:layout_marginBottom="25dp"
+        android:text="Add picture"
+        app:layout_constraintBottom_toTopOf="@+id/textView3"
+        app:layout_constraintEnd_toEndOf="@+id/spinner_typeOfFish"
+        app:layout_constraintStart_toStartOf="@+id/guideline2" />
+
+    <Spinner
+        android:id="@+id/spinner_typeOfFish"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="1dp"
+        android:layout_marginEnd="1dp"
+        android:layout_marginBottom="16dp"
+        app:layout_constraintBottom_toTopOf="@+id/textView4"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="98dp"
+        android:layout_marginTop="21dp"
+        android:layout_marginEnd="98dp"
+        android:text="Picture of harvest:"
+        app:layout_constraintEnd_toEndOf="@+id/button_registercatch"
+        app:layout_constraintStart_toStartOf="@+id/imageView"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_begin="20dp" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_begin="20dp" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_begin="20dp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

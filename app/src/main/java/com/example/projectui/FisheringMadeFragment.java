@@ -33,6 +33,15 @@ public class FisheringMadeFragment  extends Fragment {
             Bundle savedInstanceState
     ) {
 
+//        getParentFragmentManager().setFragmentResultListener("bundleFromChooseCountryFragment", this, new FragmentResultListener() {
+//            @Override
+//            public void onFragmentResult(@NonNull String requestKey, @NonNull Bundle result) {
+//                Bundle bundleFromChooseCountryFragment = new Bundle();
+//                bundleFromChooseCountryFragment.putString("country", result.getString("country"));
+//                getParentFragmentManager().setFragmentResult("bundleFromFisheringMadeFragment", bundleFromChooseCountryFragment);
+//            }
+//        });
+
         binding = FisheringmadeFragmentBinding.inflate(inflater, container, false);
         return binding.getRoot();
 

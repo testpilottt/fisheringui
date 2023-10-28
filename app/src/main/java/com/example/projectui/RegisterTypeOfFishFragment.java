@@ -76,15 +76,16 @@ public class RegisterTypeOfFishFragment extends Fragment {
 
         binding.buttonRegisterfish.setOnClickListener(v -> {
             if (validationCheck()) {
-                JSONObject returnJsonObject = restApiCallService.sendPostRequest(POST_CREATETYPEOFFISH, collectData());
-                String httpResponseCode = returnJsonObject.get("code").toString();
-                if ("201".equals(httpResponseCode)) {
-                    NavHostFragment.findNavController(RegisterTypeOfFishFragment.this)
-                            .navigate(R.id.action__RegisterTypeOfFishFragment_to_ManageTypeOfFishFragment);
-                } else if ("208".equals(httpResponseCode)){
-                    mySnackbar.setText("Name of fish must be unique");
-                    mySnackbar.show();
-                }
+                restApiCallService.sendPostRequest(POST_CREATETYPEOFFISH, collectData()).then(returnJsonObject -> {
+                    String httpResponseCode = returnJsonObject.get("code").toString();
+                    if ("201".equals(httpResponseCode)) {
+                        NavHostFragment.findNavController(RegisterTypeOfFishFragment.this)
+                                .navigate(R.id.action__RegisterTypeOfFishFragment_to_ManageTypeOfFishFragment);
+                    } else if ("208".equals(httpResponseCode)){
+                        mySnackbar.setText("Name of fish must be unique");
+                        mySnackbar.show();
+                    }
+                });
             }
         });
     }

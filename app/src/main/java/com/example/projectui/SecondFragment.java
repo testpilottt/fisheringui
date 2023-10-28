@@ -18,8 +18,11 @@ import androidx.navigation.fragment.NavHostFragment;
 import com.example.projectui.databinding.FragmentSecondBinding;
 import com.example.projectui.enums.Country;
 
+import org.chromium.base.Promise;
+
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class SecondFragment extends Fragment {
 
@@ -35,53 +38,59 @@ public class SecondFragment extends Fragment {
             LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState
     ) {
-        getParentFragmentManager().setFragmentResultListener("bundleFromLoginFragment", this, new FragmentResultListener() {
-            @Override
-            public void onFragmentResult(@NonNull String requestKey, @NonNull Bundle result) {
-                bundleFromChooseCountryFragment.putLong("memberId", result.getLong("memberId"));
-            }
-        });
-
         binding = FragmentSecondBinding.inflate(inflater, container, false);
         return binding.getRoot();
-
-
     }
 
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         Context currentContext = getActivity().getApplicationContext();
+        bundlePromiseMethod().then(v1 -> {
+            //TODO::RAU
+            List<Country> availableCountries = Arrays.asList(Country.values()).stream().filter(country -> Country.MAURITIUS == country).collect(Collectors.toList());
 
-        List<Country> availableCountries = Arrays.asList(Country.values());
+            ArrayAdapter arrayAdapter = new ArrayAdapter(currentContext, android.R.layout.simple_list_item_1, availableCountries);
 
-        ArrayAdapter arrayAdapter = new ArrayAdapter(currentContext, android.R.layout.simple_list_item_1, availableCountries);
+            listView = (ListView) view.findViewById(R.id.availbleCountriesListview);
 
-        listView = (ListView) view.findViewById(R.id.availbleCountriesListview);
+            listView.setAdapter(arrayAdapter);
 
-        listView.setAdapter(arrayAdapter);
+            listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                    currentSelectedCountry = Country.valueOf(arrayAdapter.getItem(i).toString());
+                    Toast.makeText(currentContext, currentSelectedCountry.getUrl(), Toast.LENGTH_SHORT).show();
 
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                    bundleFromChooseCountryFragment.putString("country", currentSelectedCountry.name());
+                    getParentFragmentManager().setFragmentResult("bundleFromChooseCountryFragment", bundleFromChooseCountryFragment);
+                }
+            });
+
+            binding.buttonLogout.setOnClickListener(view1 -> NavHostFragment.findNavController(SecondFragment.this)
+                    .navigate(R.id.action_SecondFragment_to_FirstFragment));
+
+            binding.buttonNext.setOnClickListener(view12 -> {
+                if (currentSelectedCountry != null) {
+                    NavHostFragment.findNavController(SecondFragment.this)
+                            .navigate(R.id.action_SecondFragment_to_FisheringMadeFragment);
+                } else {
+                    Toast.makeText(currentContext, "Please choose a Country first.", Toast.LENGTH_SHORT).show();
+                }
+            });
+        });
+    }
+
+    private Promise<Void> bundlePromiseMethod() {
+        Promise<Void> promise = new Promise<>();
+
+        getParentFragmentManager().setFragmentResultListener("bundleFromLoginFragment", this, new FragmentResultListener() {
             @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                currentSelectedCountry = Country.valueOf(arrayAdapter.getItem(i).toString());
-                Toast.makeText(currentContext, currentSelectedCountry.getUrl(), Toast.LENGTH_SHORT).show();
-
-                bundleFromChooseCountryFragment.putString("country", currentSelectedCountry.name());
-                getParentFragmentManager().setFragmentResult("bundleFromChooseCountryFragment", bundleFromChooseCountryFragment);
+            public void onFragmentResult(@NonNull String requestKey, @NonNull Bundle result) {
+                bundleFromChooseCountryFragment.putLong("memberId", result.getLong("memberId"));
+                promise.fulfill(null);
             }
         });
-
-        binding.buttonLogout.setOnClickListener(view1 -> NavHostFragment.findNavController(SecondFragment.this)
-                .navigate(R.id.action_SecondFragment_to_FirstFragment));
-
-        binding.buttonNext.setOnClickListener(view12 -> {
-            if (currentSelectedCountry != null) {
-                NavHostFragment.findNavController(SecondFragment.this)
-                        .navigate(R.id.action_SecondFragment_to_FisheringMadeFragment);
-            } else {
-                Toast.makeText(currentContext, "Please choose a Country first.", Toast.LENGTH_SHORT).show();
-            }
-        });
+        return promise;
     }
 
     @Override

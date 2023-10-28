@@ -33,6 +33,7 @@ import com.example.projectui.service.RestApiCallServiceImpl;
 import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
 
+import org.chromium.base.Promise;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -62,7 +63,10 @@ public class CreateFisheringMadeFragment extends Fragment {
 
     private String currentLocationString;
 
-    private long currentMemberId;
+    private Long currentMemberId;
+
+    Bundle bundleFromCreateFisheringMadeFragment = new Bundle();
+    RestApiCallServiceImpl restApiCallService = new RestApiCallServiceImpl();
 
     public void setGetLocationConsumer(Consumer<Location> getLocationConsumer) {
         this.getLocationConsumer = getLocationConsumer;
@@ -77,32 +81,6 @@ public class CreateFisheringMadeFragment extends Fragment {
         this.currentActivity = getActivity();
         this.currentContext = this.currentActivity.getApplicationContext();
         binding.inputLocation.setEnabled(false);
-        return binding.getRoot();
-    }
-
-    public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
-        mySnackbar = Snackbar.make(view, "", BaseTransientBottomBar.LENGTH_LONG);
-
-        if (Objects.isNull(currentCountry)) {
-            getParentFragmentManager().setFragmentResultListener("bundleFromFisheringMadeFragment", this, new FragmentResultListener() {
-                @Override
-                public void onFragmentResult(@NonNull String requestKey, @NonNull Bundle result) {
-                    currentCountry = Country.valueOf(result.getString("country"));
-                    currentMemberId = result.getLong("memberId");
-                }
-            });
-        }
-
-        super.onViewCreated(view, savedInstanceState);
-        setGetLocationConsumer(this::onLocationConsumerRetrieve);
-        RestApiCallServiceImpl restApiCallService = new RestApiCallServiceImpl();
-
-        restApiCallService.sendGetRequest(GET_TYPEOFFISHLIST, null);
-        initTypeOfFishSpinner();
-        binding.buttonGetLocation.setOnClickListener(v -> {
-            LocationServiceImpl locationService = new LocationServiceImpl();
-            locationService.getLocation(getActivity(), getLocationConsumer);
-        });
 
         ActivityResultLauncher<Intent> startActivityForResult = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
@@ -114,32 +92,75 @@ public class CreateFisheringMadeFragment extends Fragment {
                     }
                 }
         );
-
         binding.buttonAddPicture.setOnClickListener(v -> {
             Intent intent = new Intent(Intent.ACTION_PICK, EXTERNAL_CONTENT_URI);
             startActivityForResult.launch(intent);
         });
 
+        return binding.getRoot();
+    }
 
-        binding.buttonRegistercatch.setOnClickListener(v -> {
-            if (validationCheck()) {
-                JSONObject returnJsonObject = restApiCallService.sendPostRequest(POST_CREATENEWFISHERINGMADE, collectData());
-                String httpResponseCode = returnJsonObject.get("code").toString();
-                if ("404".equals(httpResponseCode)) {
-                    mySnackbar.setText("Your country has not been configured. Please contact administrator.");
-                    mySnackbar.show();
+    public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        setGetLocationConsumer(this::onLocationConsumerRetrieve);
+
+        bundlePromiseMethod().then(v1 -> {
+            initTypeOfFishSpinner(view);
+            binding.buttonGetLocation.setOnClickListener(v -> {
+                LocationServiceImpl locationService = new LocationServiceImpl();
+                locationService.getLocation(getActivity(), getLocationConsumer);
+            });
+
+            binding.buttonRegistercatch.setOnClickListener(v -> {
+                if (validationCheck(view)) {
+                    restApiCallService.sendPostRequest(POST_CREATENEWFISHERINGMADE, collectData()).then(returnJsonObject -> {
+                        String httpResponseCode = returnJsonObject.get("code").toString();
+                        if ("404".equals(httpResponseCode)) {
+                            mySnackbar = Snackbar.make(view, "", BaseTransientBottomBar.LENGTH_LONG);
+                            mySnackbar.setText("Your country has not been configured. Please contact administrator.");
+                            mySnackbar.show();
+                        } else if ("201".equals(httpResponseCode)) {
+                            bundleFromCreateFisheringMadeFragment.putString("country", currentCountry.name());
+                            bundleFromCreateFisheringMadeFragment.putLong("memberId", currentMemberId);
+
+                            getParentFragmentManager().setFragmentResult("bundleFromCreateFisheringMadeFragment", bundleFromCreateFisheringMadeFragment);
+
+                            NavHostFragment.findNavController(CreateFisheringMadeFragment.this)
+                                    .navigate(R.id.action_CreateFisheringMadeFragment_to_FisheringMadeFragment);
+                        }
+                    });
                 }
+            });
+            binding.buttonBack.setOnClickListener(v -> {
+                NavHostFragment.findNavController(CreateFisheringMadeFragment.this)
+                        .navigate(R.id.action_CreateFisheringMadeFragment_to_FisheringMadeFragment);
+
+                bundleFromCreateFisheringMadeFragment.putString("country", currentCountry.name());
+                bundleFromCreateFisheringMadeFragment.putLong("memberId", currentMemberId);
+
+                getParentFragmentManager().setFragmentResult("bundleFromCreateFisheringMadeFragment", bundleFromCreateFisheringMadeFragment);
+
+            });
+        });
+    }
+
+    private Promise<Void> bundlePromiseMethod() {
+        Promise<Void> promise = new Promise<>();
+        getParentFragmentManager().setFragmentResultListener("bundleFromFisheringMadeFragment", this, new FragmentResultListener() {
+            @Override
+            public void onFragmentResult(@NonNull String requestKey, @NonNull Bundle result) {
+                currentCountry = Country.valueOf(result.getString("country"));
+                currentMemberId = result.getLong("memberId");
+                promise.fulfill(null);
             }
         });
 
-        binding.buttonBack.setOnClickListener(v -> {
-            NavHostFragment.findNavController(CreateFisheringMadeFragment.this)
-                    .navigate(R.id.action_CreateFisheringMadeFragment_to_FisheringMadeFragment);
-        });
-
+        return promise;
     }
-    private boolean validationCheck() {
+
+    private boolean validationCheck(View view) {
         boolean isValid = true;
+        mySnackbar = Snackbar.make(view, "", BaseTransientBottomBar.LENGTH_LONG);
         if (Objects.isNull(binding.imageView.getDrawable())) {
             mySnackbar.setText("Please add an Image of the fish first!");
 
@@ -196,66 +217,65 @@ public class CreateFisheringMadeFragment extends Fragment {
         binding = null;
     }
 
-    private void initTypeOfFishSpinner() {
+    private void initTypeOfFishSpinner(View view) {
         RestApiCallServiceImpl restApiCallService = new RestApiCallServiceImpl();
         List<TypeOfFish> typeOfFishList = new ArrayList<>();
+        mySnackbar = Snackbar.make(view, "", BaseTransientBottomBar.LENGTH_LONG);
+        restApiCallService.sendGetRequest(GET_TYPEOFFISHLIST, null).then(returnJsonObject -> {
+                    if (Objects.isNull(returnJsonObject)) {
+                        mySnackbar.setText("Unexpected error, check network and try again!");
+                        mySnackbar.show();
+                        return;
+                    } else {
+                        String httpResponseCode = returnJsonObject.get("code").toString();
+                        if (httpResponseCode.equals("401")) {
+                            mySnackbar.show();
+                        } else if (httpResponseCode.equals("404")) {
+                            mySnackbar.setText("Unexpected error, check network and try again!");
+                            mySnackbar.show();
+                        } else if (httpResponseCode.equals("200")) {
 
-        JSONObject returnJsonObject = restApiCallService.sendGetRequest(GET_TYPEOFFISHLIST, null);
+                            JSONParser parser = new JSONParser();
+                            org.json.simple.JSONArray jsonArray;
 
-        if (Objects.isNull(returnJsonObject)) {
-            mySnackbar.setText("Unexpected error, check network and try again!");
-            mySnackbar.show();
-            return;
-        } else {
-            String httpResponseCode = returnJsonObject.get("code").toString();
-            if (httpResponseCode.equals("401")) {
-                mySnackbar.show();
-            } else if (httpResponseCode.equals("404")) {
-                mySnackbar.setText("Unexpected error, check network and try again!");
-                mySnackbar.show();
-            } else if (httpResponseCode.equals("200")) {
+                            try {
+                                jsonArray = (org.json.simple.JSONArray) parser.parse(returnJsonObject.get("body").toString());
 
-                JSONParser parser = new JSONParser();
-                org.json.simple.JSONArray jsonArray;
+                                jsonArray.forEach(tof -> {
+                                    JSONObject jsonObject = (JSONObject) tof;
 
-                try {
-                    jsonArray = (org.json.simple.JSONArray) parser.parse(returnJsonObject.get("body").toString());
+                                    if (Boolean.parseBoolean(jsonObject.get("active").toString())) {
+                                        TypeOfFish typeOfFish = new TypeOfFish();
+                                        typeOfFish.setTypeOfFishId(Long.valueOf(jsonObject.get("typeOfFishId").toString()));
+                                        typeOfFish.setActive(Boolean.valueOf(jsonObject.get("active").toString()));
+                                        typeOfFish.setTypeOfFishName(jsonObject.get("typeOfFishName").toString());
 
-                    jsonArray.forEach(tof -> {
+                                        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+                                            byte[] decodedString = Base64.getDecoder().decode(jsonObject.get("typeOfFishPictureBase64").toString());
+                                            typeOfFish.setTypeOfFishPictureBase64(decodedString);
+                                        }
+                                        typeOfFishList.add(typeOfFish);
+                                    }
+                                });
 
-                        JSONObject tofObject = (JSONObject) tof;
-
-                        TypeOfFish typeOfFish = new TypeOfFish();
-                        typeOfFish.setTypeOfFishId(Long.valueOf(tofObject.get("typeOfFishId").toString()));
-                        typeOfFish.setActive(Boolean.valueOf(tofObject.get("active").toString()));
-                        typeOfFish.setTypeOfFishName(tofObject.get("typeOfFishName").toString());
-
-                        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-                            byte[] decodedString = Base64.getDecoder().decode(tofObject.get("typeOfFishPictureBase64").toString());
-                            typeOfFish.setTypeOfFishPictureBase64(decodedString);
+                            } catch (ParseException e) {
+                                throw new RuntimeException(e);
+                            }
                         }
-                        typeOfFishList.add(typeOfFish);
-                    });
 
-                } catch (ParseException e) {
-                    throw new RuntimeException(e);
-                }
-            }
+                        TypeOfFishSpinnerAdapter typeOfFishSpinnerAdapter = new TypeOfFishSpinnerAdapter(currentContext, typeOfFishList);
+                        binding.spinnerTypeOfFish.setAdapter(typeOfFishSpinnerAdapter);
+
+                        binding.spinnerTypeOfFish.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                            @Override
+                            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                                currentSelectedTypeOfFish = typeOfFishList.get(i);
+                                mySnackbar.setText("Type of fish: " + currentSelectedTypeOfFish.getTypeOfFishName());
+                            }
+                            @Override
+                            public void onNothingSelected(AdapterView<?> adapterView) {}
+                        });
         }
-
-        TypeOfFishSpinnerAdapter typeOfFishSpinnerAdapter = new TypeOfFishSpinnerAdapter(currentContext, typeOfFishList);
-//
-        binding.spinnerTypeOfFish.setAdapter(typeOfFishSpinnerAdapter);
-
-        binding.spinnerTypeOfFish.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                currentSelectedTypeOfFish = typeOfFishList.get(i);
-                mySnackbar.setText("Type of fish: " + currentSelectedTypeOfFish.getTypeOfFishName());
-            }
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {}
         });
-
     }
 }

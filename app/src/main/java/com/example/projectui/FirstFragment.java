@@ -51,10 +51,12 @@ public class FirstFragment extends Fragment {
          //TODO: remove set text
         loginUsername.setText("rohan");
         loginPassword.setText("password");
+        mySnackbar = Snackbar.make(view, "", BaseTransientBottomBar.LENGTH_LONG);
 
         binding.buttonFirst.setOnClickListener(view12 -> {
-            JSONObject returnJsonBody = loginVerification(view12);
+            JSONObject returnJsonBody = loginVerification(view);
             if (returnJsonBody != null) {
+
                 mySnackbar.setText("Login successful!");
                 mySnackbar.show();
 
@@ -74,7 +76,7 @@ public class FirstFragment extends Fragment {
         });
 
         binding.buttonAdminlogin.setOnClickListener(view1 -> {
-            JSONObject returnJsonBody = loginVerification(view1);
+            JSONObject returnJsonBody = loginVerification(view);
             if (returnJsonBody != null) {
 
                 if (AccessLevel.ADMIN == AccessLevel.valueOf(returnJsonBody.get("accessLevel").toString())) {
@@ -96,9 +98,8 @@ public class FirstFragment extends Fragment {
         jsonObject.put("username", loginUsername.getText().toString());
         jsonObject.put("password", loginPassword.getText().toString());
         RestApiCallServiceImpl restApiCallService = new RestApiCallServiceImpl();
-        JSONObject returnJsonObject = restApiCallService.sendPostRequest(POST_MEMBERLOGIN, jsonObject);
-        mySnackbar = Snackbar.make(view, "Login failed, please try again.", BaseTransientBottomBar.LENGTH_LONG);
-
+        JSONObject returnJsonObject = restApiCallService.sendPostRequest(POST_MEMBERLOGIN, jsonObject).getResult();
+        mySnackbar = Snackbar.make(view, "", BaseTransientBottomBar.LENGTH_LONG);
         if (Objects.isNull(returnJsonObject)) {
             mySnackbar.setText("Unexpected error, check network and try again!");
             mySnackbar.show();
@@ -107,6 +108,7 @@ public class FirstFragment extends Fragment {
             String httpResponseCode = returnJsonObject.get("code").toString();
 
             if (httpResponseCode.equals("401")) {
+                mySnackbar.setText("Login failed!");
                 mySnackbar.show();
             } else if (httpResponseCode.equals("404")) {
                 mySnackbar.setText("Unexpected error, check network and try again!");

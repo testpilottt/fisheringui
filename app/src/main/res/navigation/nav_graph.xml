@@ -94,7 +94,7 @@
         tools:layout="@layout/register_member">
 
         <action
-            android:id="@+id/action_CreateFisheringMadeFragment_to_FisheringMadeFragment"
+            android:id="@+id/action_xx"
             app:destination="@id/FisheringMadeFragment" />
     </fragment>
 </navigation>

@@ -18,6 +18,7 @@ import com.example.projectui.ListAdapter.TypeOfFishListAdapter;
 import com.example.projectui.databinding.ManageTypeoffishBinding;
 import com.example.projectui.dto.TypeOfFish;
 import com.example.projectui.service.RestApiCallServiceImpl;
+import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
 
 import org.json.simple.JSONObject;
@@ -61,61 +62,61 @@ public class ManageTypeOfFishFragment extends Fragment {
     private void initTypeOfFishListView(Context currentContext, View view) {
         RestApiCallServiceImpl restApiCallService = new RestApiCallServiceImpl();
         List<TypeOfFish> typeOfFishList = new ArrayList<>();
+        mySnackbar = Snackbar.make(view, "", BaseTransientBottomBar.LENGTH_LONG);
 
-        JSONObject returnJsonObject = restApiCallService.sendGetRequest(GET_TYPEOFFISHLIST, null);
-
-        if (Objects.isNull(returnJsonObject)) {
-            mySnackbar.setText("Unexpected error, check network and try again!");
-            mySnackbar.show();
-            return;
-        } else {
-            String httpResponseCode = returnJsonObject.get("code").toString();
-            if (httpResponseCode.equals("401")) {
-                mySnackbar.show();
-            } else if (httpResponseCode.equals("404")) {
+        restApiCallService.sendGetRequest(GET_TYPEOFFISHLIST, null).then(returnJsonObject -> {
+            if (Objects.isNull(returnJsonObject)) {
                 mySnackbar.setText("Unexpected error, check network and try again!");
                 mySnackbar.show();
-            } else if (httpResponseCode.equals("200")) {
+                return;
+            } else {
+                String httpResponseCode = returnJsonObject.get("code").toString();
+                if (httpResponseCode.equals("401")) {
+                    mySnackbar.show();
+                } else if (httpResponseCode.equals("404")) {
+                    mySnackbar.setText("Unexpected error, check network and try again!");
+                    mySnackbar.show();
+                } else if (httpResponseCode.equals("200")) {
 
-                JSONParser parser = new JSONParser();
-                org.json.simple.JSONArray jsonArray;
+                    JSONParser parser = new JSONParser();
+                    org.json.simple.JSONArray jsonArray;
 
-                try {
-                    jsonArray = (org.json.simple.JSONArray) parser.parse(returnJsonObject.get("body").toString());
+                    try {
+                        jsonArray = (org.json.simple.JSONArray) parser.parse(returnJsonObject.get("body").toString());
 
-                    jsonArray.forEach(tof -> {
+                        jsonArray.forEach(tof -> {
 
-                        JSONObject tofObject = (JSONObject) tof;
+                            JSONObject tofObject = (JSONObject) tof;
 
-                        TypeOfFish typeOfFish = new TypeOfFish();
-                        typeOfFish.setTypeOfFishId(Long.valueOf(tofObject.get("typeOfFishId").toString()));
-                        typeOfFish.setActive(Boolean.valueOf(tofObject.get("active").toString()));
-                        typeOfFish.setTypeOfFishName(tofObject.get("typeOfFishName").toString());
+                            TypeOfFish typeOfFish = new TypeOfFish();
+                            typeOfFish.setTypeOfFishId(Long.valueOf(tofObject.get("typeOfFishId").toString()));
+                            typeOfFish.setActive(Boolean.valueOf(tofObject.get("active").toString()));
+                            typeOfFish.setTypeOfFishName(tofObject.get("typeOfFishName").toString());
 
-                        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-                            byte[] decodedString = Base64.getDecoder().decode(tofObject.get("typeOfFishPictureBase64").toString());
-                            typeOfFish.setTypeOfFishPictureBase64(decodedString);
-                        }
-                        typeOfFishList.add(typeOfFish);
-                    });
+                            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+                                byte[] decodedString = Base64.getDecoder().decode(tofObject.get("typeOfFishPictureBase64").toString());
+                                typeOfFish.setTypeOfFishPictureBase64(decodedString);
+                            }
+                            typeOfFishList.add(typeOfFish);
+                        });
 
-                } catch (ParseException e) {
-                    throw new RuntimeException(e);
+                    } catch (ParseException e) {
+                        throw new RuntimeException(e);
+                    }
                 }
             }
-        }
 
-        TypeOfFishListAdapter typeOfFishListAdapter = new TypeOfFishListAdapter(currentContext, typeOfFishList);
-        listView = (ListView) view.findViewById(R.id.typeOfFishListView);
+            TypeOfFishListAdapter typeOfFishListAdapter = new TypeOfFishListAdapter(currentContext, typeOfFishList);
+            listView = (ListView) view.findViewById(R.id.typeOfFishListView);
 
-        listView.setAdapter(typeOfFishListAdapter);
+            listView.setAdapter(typeOfFishListAdapter);
 
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                TypeOfFish typeOfFishSelected = typeOfFishList.get(i);
-
-            }
+            listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                    TypeOfFish typeOfFishSelected = typeOfFishList.get(i);
+                }
+            });
         });
     }
 

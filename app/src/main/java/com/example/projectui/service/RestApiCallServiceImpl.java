@@ -7,6 +7,7 @@ import com.squareup.okhttp.Request;
 import com.squareup.okhttp.RequestBody;
 import com.squareup.okhttp.Response;
 
+import org.chromium.base.Promise;
 import org.json.simple.JSONObject;
 
 import java.io.IOException;
@@ -14,7 +15,8 @@ import java.util.Objects;
 
 public class RestApiCallServiceImpl implements RestApiCallService {
     @Override
-    public JSONObject sendPostRequest(String url, JSONObject jsonObject) {
+    public Promise<JSONObject> sendPostRequest(String url, JSONObject jsonObject) {
+        Promise<JSONObject> promise = new Promise<>();
 
         OkHttpClient client = new OkHttpClient();
 
@@ -32,19 +34,20 @@ public class RestApiCallServiceImpl implements RestApiCallService {
 
             returnJsonObject.put("code", response.code());
             returnJsonObject.put("body", response.body().string());
-
-            return returnJsonObject;
+            promise.fulfill(returnJsonObject);
+            return promise;
 
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        return null;
+        return promise;
     }
 
     @Override
-    public JSONObject sendGetRequest(String url, JSONObject jsonObject) {
+    public Promise<JSONObject> sendGetRequest(String url, JSONObject jsonObject) {
         OkHttpClient client = new OkHttpClient();
+        Promise<JSONObject> promise = new Promise<>();
 
         String param = Objects.nonNull(jsonObject) ? String.valueOf(jsonObject.get("value")) : "";
 
@@ -61,12 +64,13 @@ public class RestApiCallServiceImpl implements RestApiCallService {
             returnJsonObject.put("code", response.code());
             returnJsonObject.put("body", response.body().string());
 
-            return returnJsonObject;
+            promise.fulfill(returnJsonObject);
 
         } catch (IOException e) {
+            promise.fulfill(null);
             e.printStackTrace();
         }
 
-        return null;
+        return promise;
     }
 }

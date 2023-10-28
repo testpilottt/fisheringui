@@ -1,6 +1,6 @@
 package com.example.projectui;
 
-import static com.example.projectui.service.RestApiCallServiceImpl.POST_MEMBERLOGIN;
+import static com.example.projectui.Helper.RESTApiRequestURL.POST_MEMBERLOGIN;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -30,6 +30,7 @@ public class FirstFragment extends Fragment {
     private EditText loginUsername, loginPassword;
 
     private Snackbar mySnackbar;
+    Bundle bundleFromLoginFragment = new Bundle();
 
     @Override
     public View onCreateView(
@@ -57,12 +58,18 @@ public class FirstFragment extends Fragment {
                 mySnackbar.setText("Login successful!");
                 mySnackbar.show();
 
-                Bundle bundleFromLoginFragment = new Bundle();
                 bundleFromLoginFragment.putLong("memberId", Long.parseLong(returnJsonBody.get("memberId").toString()));
-                getParentFragmentManager().setFragmentResult("bundleFromLoginFragment", bundleFromLoginFragment);
 
-                NavHostFragment.findNavController(FirstFragment.this)
-                        .navigate(R.id.action_FirstFragment_to_SecondFragment);
+                if (Objects.nonNull(returnJsonBody.get("country"))) {
+                    bundleFromLoginFragment.putString("country", returnJsonBody.get("country").toString());
+                    getParentFragmentManager().setFragmentResult("bundleFromLoginFragment", bundleFromLoginFragment);
+                    NavHostFragment.findNavController(FirstFragment.this)
+                            .navigate(R.id.action_FirstFragment_to_FisheringMadeFragment);
+                } else {
+                    getParentFragmentManager().setFragmentResult("bundleFromLoginFragment", bundleFromLoginFragment);
+                    NavHostFragment.findNavController(FirstFragment.this)
+                            .navigate(R.id.action_FirstFragment_to_SecondFragment);
+                }
             }
         });
 

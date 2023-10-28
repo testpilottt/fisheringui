@@ -17,6 +17,9 @@
         <action
             android:id="@+id/action_FirstFragment_to_AdminMainFragment"
             app:destination="@id/AdminMainPageFragment" />
+        <action
+            android:id="@+id/action_FirstFragment_to_FisheringMadeFragment"
+            app:destination="@id/FisheringMadeFragment" />
     </fragment>
     <fragment
         android:id="@+id/SecondFragment"
@@ -80,6 +83,9 @@
         android:label="RegisterTypeOfFishFragment"
         tools:layout="@layout/register_typeoffish">
 
+        <action
+            android:id="@+id/action__RegisterTypeOfFishFragment_to_ManageTypeOfFishFragment"
+            app:destination="@id/ManageTypeOfFishFragment"/>
     </fragment>
     <fragment
         android:id="@+id/RegisterMemberFragment"

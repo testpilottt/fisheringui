@@ -12,6 +12,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentResultListener;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.example.projectui.databinding.FragmentSecondBinding;
@@ -27,14 +28,23 @@ public class SecondFragment extends Fragment {
     private ListView listView;
     private Country currentSelectedCountry;
 
+    Bundle bundleFromChooseCountryFragment = new Bundle();
+
     @Override
     public View onCreateView(
             LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState
     ) {
+        getParentFragmentManager().setFragmentResultListener("bundleFromLoginFragment", this, new FragmentResultListener() {
+            @Override
+            public void onFragmentResult(@NonNull String requestKey, @NonNull Bundle result) {
+                bundleFromChooseCountryFragment.putLong("memberId", result.getLong("memberId"));
+            }
+        });
 
         binding = FragmentSecondBinding.inflate(inflater, container, false);
         return binding.getRoot();
+
 
     }
 
@@ -56,8 +66,7 @@ public class SecondFragment extends Fragment {
                 currentSelectedCountry = Country.valueOf(arrayAdapter.getItem(i).toString());
                 Toast.makeText(currentContext, currentSelectedCountry.getUrl(), Toast.LENGTH_SHORT).show();
 
-                Bundle bundleFromChooseCountryFragment = new Bundle();
-                bundleFromChooseCountryFragment.putString("country", currentSelectedCountry.getUrl());
+                bundleFromChooseCountryFragment.putString("country", currentSelectedCountry.name());
                 getParentFragmentManager().setFragmentResult("bundleFromChooseCountryFragment", bundleFromChooseCountryFragment);
             }
         });

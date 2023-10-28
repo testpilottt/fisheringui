@@ -3,8 +3,6 @@ package com.example.projectui.dto;
 import com.example.projectui.enums.Country;
 import com.example.projectui.enums.Region;
 
-import java.sql.Blob;
-
 public class FisheringMade {
 
     private Long fisheringId;
@@ -12,9 +10,9 @@ public class FisheringMade {
 
     private String location;
 
-    private Blob pictureOfFish;
+    private byte[] pictureOfFishBase64;
 
-    private Integer weightKg;
+    private Double weightKg;
 
     private Country country;
 
@@ -41,19 +39,19 @@ public class FisheringMade {
         this.location = location;
     }
 
-    public Blob getPictureOfFish() {
-        return pictureOfFish;
+    public byte[] getPictureOfFishBase64() {
+        return pictureOfFishBase64;
     }
 
-    public void setPictureOfFish(Blob pictureOfFish) {
-        this.pictureOfFish = pictureOfFish;
+    public void setPictureOfFishBase64(byte[] pictureOfFishBase64) {
+        this.pictureOfFishBase64 = pictureOfFishBase64;
     }
 
-    public Integer getWeightKg() {
+    public Double getWeightKg() {
         return weightKg;
     }
 
-    public void setWeightKg(Integer weightKg) {
+    public void setWeightKg(Double weightKg) {
         this.weightKg = weightKg;
     }
 

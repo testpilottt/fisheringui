@@ -1,6 +1,6 @@
 package com.example.projectui;
 
-import static com.example.projectui.service.RestApiCallServiceImpl.GET_TYPEOFFISHLIST;
+import static com.example.projectui.Helper.RESTApiRequestURL.GET_TYPEOFFISHLIST;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -60,9 +60,9 @@ public class ManageTypeOfFishFragment extends Fragment {
 
     private void initTypeOfFishListView(Context currentContext, View view) {
         RestApiCallServiceImpl restApiCallService = new RestApiCallServiceImpl();
+        List<TypeOfFish> typeOfFishList = new ArrayList<>();
 
         JSONObject returnJsonObject = restApiCallService.sendGetRequest(GET_TYPEOFFISHLIST, null);
-        List<TypeOfFish> typeOfFishList = new ArrayList<>();
 
         if (Objects.isNull(returnJsonObject)) {
             mySnackbar.setText("Unexpected error, check network and try again!");

@@ -14,6 +14,9 @@
         <action
             android:id="@+id/action_FirstFragment_to_SecondFragment"
             app:destination="@id/SecondFragment" />
+        <action
+            android:id="@+id/action_FirstFragment_to_AdminMainFragment"
+            app:destination="@id/AdminMainPageFragment" />
     </fragment>
     <fragment
         android:id="@+id/SecondFragment"
@@ -46,6 +49,43 @@
         android:name="com.example.projectui.CreateFisheringMadeFragment"
         android:label="CreateFisheringMadeFragment"
         tools:layout="@layout/createfishringmade_fragment">
+
+        <action
+            android:id="@+id/action_CreateFisheringMadeFragment_to_FisheringMadeFragment"
+            app:destination="@id/FisheringMadeFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/AdminMainPageFragment"
+        android:name="com.example.projectui.AdminMainPageFragment"
+        android:label="AdminMainPageFragment"
+        tools:layout="@layout/admin_mainpage">
+
+        <action
+            android:id="@+id/action_AdminMainPageFragment_to_ManageTypeOfFishFragment"
+            app:destination="@id/ManageTypeOfFishFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/ManageTypeOfFishFragment"
+        android:name="com.example.projectui.ManageTypeOfFishFragment"
+        android:label="ManageTypeOfFishFragment"
+        tools:layout="@layout/manage_typeoffish">
+
+        <action
+            android:id="@+id/action_ManageTypeOfFishFragment_to_RegisterTypeOfFishFragment"
+            app:destination="@id/RegisterTypeOfFishFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/RegisterTypeOfFishFragment"
+        android:name="com.example.projectui.RegisterTypeOfFishFragment"
+        android:label="RegisterTypeOfFishFragment"
+        tools:layout="@layout/register_typeoffish">
+
+    </fragment>
+    <fragment
+        android:id="@+id/RegisterMemberFragment"
+        android:name="com.example.projectui.RegisterMemberFragment"
+        android:label="RegisterMemberFragment"
+        tools:layout="@layout/register_member">
 
         <action
             android:id="@+id/action_CreateFisheringMadeFragment_to_FisheringMadeFragment"

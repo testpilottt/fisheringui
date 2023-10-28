@@ -8,13 +8,12 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.navigation.fragment.NavHostFragment;
 
-import com.example.projectui.databinding.AdminMainpageBinding;
+import com.example.projectui.databinding.RegisterTypeoffishBinding;
 
-public class AdminMainPageFragment  extends Fragment {
 
-    private AdminMainpageBinding binding;
+public class RegisterTypeOfFishFragment extends Fragment {
+    private RegisterTypeoffishBinding binding;
 
     @Override
     public View onCreateView(
@@ -22,7 +21,7 @@ public class AdminMainPageFragment  extends Fragment {
             Bundle savedInstanceState
     ) {
 
-        binding = AdminMainpageBinding.inflate(inflater, container, false);
+        binding = RegisterTypeoffishBinding.inflate(inflater, container, false);
         return binding.getRoot();
 
     }
@@ -31,10 +30,6 @@ public class AdminMainPageFragment  extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         Context currentContext = getActivity().getApplicationContext();
 
-        binding.buttonManageTypeOfFish.setOnClickListener(action -> {
-            NavHostFragment.findNavController(AdminMainPageFragment.this)
-                    .navigate(R.id.action_AdminMainPageFragment_to_ManageTypeOfFishFragment);
-        });
     }
 
     @Override

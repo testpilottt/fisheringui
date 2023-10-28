@@ -70,12 +70,12 @@ public class FirstFragment extends Fragment {
             JSONObject returnJsonBody = loginVerification(view1);
             if (returnJsonBody != null) {
 
-                if (AccessLevel.valueOf(returnJsonBody.get("accessLevel").toString()).equals(AccessLevel.ADMIN)) {
+                if (AccessLevel.ADMIN == AccessLevel.valueOf(returnJsonBody.get("accessLevel").toString())) {
                     mySnackbar.setText("Admin login successful!");
                     mySnackbar.show();
 
                     NavHostFragment.findNavController(FirstFragment.this)
-                            .navigate(R.id.action_FirstFragment_to_SecondFragment);
+                            .navigate(R.id.action_FirstFragment_to_AdminMainFragment);
                 } else {
                     mySnackbar.setText("You don't have admin access!");
                     mySnackbar.show();
@@ -110,7 +110,7 @@ public class FirstFragment extends Fragment {
                 JSONObject returnedJsonObject;
 
                 try {
-                    returnedJsonObject = (JSONObject) parser.parse(returnJsonObject.toString());
+                    returnedJsonObject = (JSONObject) parser.parse(returnJsonObject.get("body").toString());
                 } catch (ParseException e) {
                     throw new RuntimeException(e);
                 }

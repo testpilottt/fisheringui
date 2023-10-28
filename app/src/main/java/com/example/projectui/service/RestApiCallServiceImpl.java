@@ -10,6 +10,7 @@ import com.squareup.okhttp.Response;
 import org.json.simple.JSONObject;
 
 import java.io.IOException;
+import java.util.Objects;
 
 public class RestApiCallServiceImpl implements RestApiCallService {
 
@@ -53,8 +54,10 @@ public class RestApiCallServiceImpl implements RestApiCallService {
     public JSONObject sendGetRequest(String url, JSONObject jsonObject) {
         OkHttpClient client = new OkHttpClient();
 
+        String param = Objects.nonNull(jsonObject) ? String.valueOf(jsonObject.get("value")) : "";
+
         Request getRequest = new Request.Builder()
-                .url(url + jsonObject.get("value"))
+                .url(url + param)
                 .get()
                 .build();
 

@@ -17,6 +17,13 @@
         android:theme="@style/Theme.ProjectUI"
         tools:targetApi="31">
         <activity
+            android:name=".PopUpWindowImageView"
+            android:exported="false"
+            android:theme="@style/Theme.ProjectUI.PopUpWindowTheme"/>
+        <activity
+            android:name=".CustomFisheringMadeListView"
+            android:exported="false" />
+        <activity
             android:name=".CustomTypeOfFishListView"
             android:exported="false" />
         <activity

@@ -3,6 +3,8 @@ package com.example.projectui.dto;
 import com.example.projectui.enums.Country;
 import com.example.projectui.enums.Region;
 
+import java.time.LocalDateTime;
+
 public class FisheringMade {
 
     private Long fisheringId;
@@ -22,6 +24,8 @@ public class FisheringMade {
 
     //blockchain
     private String fisheringHash;
+
+    private LocalDateTime timeLog;
 
     public Long getFisheringId() {
         return fisheringId;
@@ -85,5 +89,13 @@ public class FisheringMade {
 
     public void setFisheringHash(String fisheringHash) {
         this.fisheringHash = fisheringHash;
+    }
+
+    public LocalDateTime getTimeLog() {
+        return timeLog;
+    }
+
+    public void setTimeLog(LocalDateTime timeLog) {
+        this.timeLog = timeLog;
     }
 }

@@ -46,6 +46,9 @@
         <action
             android:id="@+id/action_FisheringMadeFragment_to_CreateFisheringMadeFragment"
             app:destination="@id/CreateFisheringMadeFragment" />
+        <action
+            android:id="@+id/action_FisheringMadeFragment_to_FirstFragment"
+            app:destination="@id/FirstFragment"/>
     </fragment>
     <fragment
         android:id="@+id/CreateFisheringMadeFragment"

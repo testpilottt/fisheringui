@@ -3,19 +3,25 @@ package com.example.projectui;
 import static com.example.projectui.Helper.RESTApiRequestURL.GET_FISHERINGMADE;
 
 import android.content.Context;
+import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ListView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentResultListener;
 import androidx.navigation.fragment.NavHostFragment;
 
+import com.example.projectui.ListAdapter.FisheringMadeListAdapter;
 import com.example.projectui.databinding.FisheringmadeFragmentBinding;
 import com.example.projectui.dto.FisheringMade;
+import com.example.projectui.dto.TypeOfFish;
 import com.example.projectui.enums.Country;
 import com.example.projectui.enums.Region;
 import com.example.projectui.service.RestApiCallServiceImpl;
@@ -27,6 +33,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
@@ -56,6 +63,7 @@ public class FisheringMadeFragment  extends Fragment {
 
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         Context currentContext = getActivity().getApplicationContext();
@@ -64,13 +72,12 @@ public class FisheringMadeFragment  extends Fragment {
             initFisheringMadeListView(currentContext, view);
         });
 
-        binding.buttonRegisternewcatch.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                NavHostFragment.findNavController(FisheringMadeFragment.this)
-                        .navigate(R.id.action_FisheringMadeFragment_to_CreateFisheringMadeFragment);
-            }
-        });
+        binding.buttonRegisternewcatch.setOnClickListener(view12 -> NavHostFragment.findNavController(FisheringMadeFragment.this)
+                .navigate(R.id.action_FisheringMadeFragment_to_CreateFisheringMadeFragment));
+
+        binding.buttonLogout.setOnClickListener(view1 -> NavHostFragment.findNavController(FisheringMadeFragment.this)
+                .navigate(R.id.action_FisheringMadeFragment_to_FirstFragment));
+
     }
 
     private Promise<Void> bundlePromiseMethod() {
@@ -112,6 +119,7 @@ public class FisheringMadeFragment  extends Fragment {
         return promise;
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     private void initFisheringMadeListView(Context currentContext, View view) {
         RestApiCallServiceImpl restApiCallService = new RestApiCallServiceImpl();
         List<FisheringMade> fisheringMadeList = new ArrayList<>();
@@ -147,16 +155,19 @@ public class FisheringMadeFragment  extends Fragment {
                             fisheringMade.setWeightKg(Double.valueOf(jsonObject.get("weightKg").toString()));
                             fisheringMade.setRegion(Region.valueOf(jsonObject.get("region").toString()));
                             fisheringMade.setCountry(Country.valueOf(jsonObject.get("country").toString()));
-//                        fisheringMade.setTypeOfFish();
-                            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-                                byte[] decodedString = Base64.getDecoder().decode(jsonObject.get("pictureOfFishBase64").toString());
-                                fisheringMade.setPictureOfFishBase64(decodedString);
-                                JSONObject typeOfFish = (JSONObject) jsonObject.get("typeOfFish");
-                                fisheringMade.getTypeOfFish().setTypeOfFishName(typeOfFish.get("typeOfFishName").toString());
-                                decodedString = Base64.getDecoder().decode(jsonObject.get("typeOfFishPictureBase64").toString());
-                                fisheringMade.getTypeOfFish().setTypeOfFishPictureBase64(decodedString);
-                                fisheringMade.getTypeOfFish().setActive(Boolean.valueOf(jsonObject.get("isActive").toString()));
-                            }
+
+                            fisheringMade.setTimeLog(LocalDateTime.parse(jsonObject.get("timeLog").toString()));
+                            byte[] decodedString = Base64.getDecoder().decode(jsonObject.get("pictureOfFishBase64").toString());
+                            fisheringMade.setPictureOfFishBase64(decodedString);
+                            JSONObject typeOfFishJsonObject = (JSONObject) jsonObject.get("typeOfFish");
+
+                            TypeOfFish typeOfFish = new TypeOfFish();
+
+                            typeOfFish.setTypeOfFishName(typeOfFishJsonObject.get("typeOfFishName").toString());
+                            decodedString = Base64.getDecoder().decode(typeOfFishJsonObject.get("typeOfFishPictureBase64").toString());
+                            typeOfFish.setTypeOfFishPictureBase64(decodedString);
+                            typeOfFish.setActive(Boolean.valueOf(typeOfFishJsonObject.get("active").toString()));
+                            fisheringMade.setTypeOfFish(typeOfFish);
                             fisheringMadeList.add(fisheringMade);
                         });
 
@@ -166,18 +177,21 @@ public class FisheringMadeFragment  extends Fragment {
                 }
             }
 
-//        TypeOfFishListAdapter typeOfFishListAdapter = new TypeOfFishListAdapter(currentContext, fisheringMadeList);
-//        listView = (ListView) view.findViewById(R.id.fisheringMadeListView);
-//
-//        listView.setAdapter(typeOfFishListAdapter);
-//
-//        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//            @Override
-//            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-//                TypeOfFish typeOfFishSelected = typeOfFishList.get(i);
-//
-//            }
-//        });
+        FisheringMadeListAdapter fisheringMadeListAdapter = new FisheringMadeListAdapter(currentContext, fisheringMadeList);
+        listView = (ListView) view.findViewById(R.id.fisheringMadeListView);
+
+        listView.setAdapter(fisheringMadeListAdapter);
+
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                FisheringMade typeOfFishSelected = fisheringMadeList.get(i);
+
+                Intent intent = new Intent(currentContext, PopUpWindowImageView.class);
+                intent.putExtra("typeOfFishPictureByte", typeOfFishSelected.getTypeOfFish().getTypeOfFishPictureBase64());
+                startActivity(intent);
+            }
+        });
         });
     }
 

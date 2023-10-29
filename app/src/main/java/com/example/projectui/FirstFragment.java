@@ -2,6 +2,8 @@ package com.example.projectui;
 
 import static com.example.projectui.Helper.RESTApiRequestURL.POST_MEMBERLOGIN;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,6 +16,7 @@ import androidx.navigation.fragment.NavHostFragment;
 
 import com.example.projectui.databinding.FragmentFirstBinding;
 import com.example.projectui.enums.AccessLevel;
+import com.example.projectui.enums.Country;
 import com.example.projectui.service.RestApiCallServiceImpl;
 import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
@@ -63,10 +66,38 @@ public class FirstFragment extends Fragment {
                 bundleFromLoginFragment.putLong("memberId", Long.parseLong(returnJsonBody.get("memberId").toString()));
 
                 if (Objects.nonNull(returnJsonBody.get("country"))) {
-                    bundleFromLoginFragment.putString("country", returnJsonBody.get("country").toString());
-                    getParentFragmentManager().setFragmentResult("bundleFromLoginFragment", bundleFromLoginFragment);
-                    NavHostFragment.findNavController(FirstFragment.this)
-                            .navigate(R.id.action_FirstFragment_to_FisheringMadeFragment);
+                    //Alert Box
+                    AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+
+                    String countryName = Country.valueOf(returnJsonBody.get("country").toString()).getUrl();
+
+                    builder.setTitle("Country selection");
+                    builder.setMessage("Continue with " + countryName + "?");
+
+                    builder.setPositiveButton("Continue", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            // Do nothing but close the dialog
+                            bundleFromLoginFragment.putString("country", returnJsonBody.get("country").toString());
+                            getParentFragmentManager().setFragmentResult("bundleFromLoginFragment", bundleFromLoginFragment);
+                            NavHostFragment.findNavController(FirstFragment.this)
+                                    .navigate(R.id.action_FirstFragment_to_FisheringMadeFragment);
+                        }
+                    });
+
+                    builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            getParentFragmentManager().setFragmentResult("bundleFromLoginFragment", bundleFromLoginFragment);
+                            NavHostFragment.findNavController(FirstFragment.this)
+                                    .navigate(R.id.action_FirstFragment_to_SecondFragment);
+                        }
+                    });
+
+                    AlertDialog alert = builder.create();
+                    alert.show();
+
+                    //
+
                 } else {
                     getParentFragmentManager().setFragmentResult("bundleFromLoginFragment", bundleFromLoginFragment);
                     NavHostFragment.findNavController(FirstFragment.this)

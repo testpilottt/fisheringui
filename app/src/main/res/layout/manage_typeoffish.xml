@@ -7,6 +7,17 @@
     tools:context=".ManageTypeOfFishFragment">
 
     <Button
+        android:id="@+id/button_BACK"
+        android:layout_width="88dp"
+        android:layout_height="47dp"
+        android:layout_marginStart="16dp"
+        android:text="BACK"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/typeOfFishListView"
+        app:layout_constraintVertical_bias="0.506" />
+
+    <Button
         android:id="@+id/buttonDisable"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -39,11 +50,12 @@
         android:id="@+id/button_RegisterTypeOfFish"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="90dp"
+        android:layout_marginStart="36dp"
         android:text="Register new type of fish"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/typeOfFishListView" />
+        app:layout_constraintStart_toEndOf="@+id/button_BACK"
+        app:layout_constraintTop_toBottomOf="@+id/typeOfFishListView"
+        app:layout_constraintVertical_bias="0.513" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

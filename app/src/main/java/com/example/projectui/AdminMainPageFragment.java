@@ -35,6 +35,11 @@ public class AdminMainPageFragment  extends Fragment {
             NavHostFragment.findNavController(AdminMainPageFragment.this)
                     .navigate(R.id.action_AdminMainPageFragment_to_ManageTypeOfFishFragment);
         });
+
+        binding.buttonLogout.setOnClickListener(action -> {
+            NavHostFragment.findNavController(AdminMainPageFragment.this)
+                    .navigate(R.id.action_AdminMainPageFragment_to_FirstFragment);
+        });
     }
 
     @Override

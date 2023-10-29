@@ -69,6 +69,9 @@
         <action
             android:id="@+id/action_AdminMainPageFragment_to_ManageTypeOfFishFragment"
             app:destination="@id/ManageTypeOfFishFragment" />
+        <action
+            android:id="@+id/action_AdminMainPageFragment_to_FirstFragment"
+            app:destination="@id/FirstFragment" />
     </fragment>
     <fragment
         android:id="@+id/ManageTypeOfFishFragment"
@@ -79,6 +82,9 @@
         <action
             android:id="@+id/action_ManageTypeOfFishFragment_to_RegisterTypeOfFishFragment"
             app:destination="@id/RegisterTypeOfFishFragment" />
+        <action
+            android:id="@+id/action_ManageTypeOfFishFragment_to_AdminPage"
+            app:destination="@id/AdminMainPageFragment" />
     </fragment>
     <fragment
         android:id="@+id/RegisterTypeOfFishFragment"

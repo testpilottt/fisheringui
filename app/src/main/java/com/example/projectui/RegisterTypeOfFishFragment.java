@@ -7,6 +7,7 @@ import static com.example.projectui.Helper.RESTApiRequestURL.POST_CREATETYPEOFFI
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
@@ -19,13 +20,17 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentResultListener;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.example.projectui.databinding.RegisterTypeoffishBinding;
+import com.example.projectui.dto.ParcelableDTO;
+import com.example.projectui.dto.TypeOfFish;
 import com.example.projectui.service.RestApiCallServiceImpl;
 import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
 
+import org.chromium.base.Promise;
 import org.json.simple.JSONObject;
 
 import java.io.ByteArrayOutputStream;
@@ -56,6 +61,9 @@ public class RegisterTypeOfFishFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         Context currentContext = getActivity().getApplicationContext();
         mySnackbar = Snackbar.make(view, "", BaseTransientBottomBar.LENGTH_LONG);
+        bundlePromiseMethod().then(parcelableDTO -> {
+            initData(parcelableDTO);
+        });
 
         ActivityResultLauncher<Intent> startActivityForResult = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
@@ -88,7 +96,28 @@ public class RegisterTypeOfFishFragment extends Fragment {
                 });
             }
         });
+
+        binding.buttonBack.setOnClickListener(v -> {
+            NavHostFragment.findNavController(RegisterTypeOfFishFragment.this)
+                    .navigate(R.id.action__RegisterTypeOfFishFragment_to_ManageTypeOfFishFragment);
+        });
     }
+
+    private void initData(ParcelableDTO parcelableDTO) {
+        TypeOfFish typeOfFish = parcelableDTO.getTypeOfFish();
+        binding.inputTypeOfFishName.setText(typeOfFish.getTypeOfFishName());
+        binding.inputTypeOfFishName.setEnabled(false);
+        byte[] pic = typeOfFish.getTypeOfFishPictureBase64();
+
+        if (Objects.nonNull(pic)) {
+            Bitmap bitmap = BitmapFactory.decodeByteArray(pic, 0, pic.length);
+            binding.imageView.setImageBitmap(bitmap);
+        }
+
+        binding.inputActiveSwitch.setChecked(typeOfFish.getActive());
+
+    }
+
     private boolean validationCheck() {
         boolean isValid = true;
         if (Objects.isNull(binding.imageView.getDrawable())) {
@@ -124,5 +153,19 @@ public class RegisterTypeOfFishFragment extends Fragment {
     public void onDestroyView() {
         super.onDestroyView();
         binding = null;
+    }
+
+    private Promise<ParcelableDTO> bundlePromiseMethod() {
+        Promise<ParcelableDTO> promise = new Promise<>();
+        getParentFragmentManager().setFragmentResultListener("bundleFromManageTypeOfFishFragment", this, new FragmentResultListener() {
+            @Override
+            public void onFragmentResult(@NonNull String requestKey, @NonNull Bundle result) {
+                ParcelableDTO parcelableDTO = result.getParcelable("parcelableDTO");
+
+                promise.fulfill(parcelableDTO);
+            }
+        });
+
+        return promise;
     }
 }

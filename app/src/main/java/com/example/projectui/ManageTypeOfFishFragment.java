@@ -3,6 +3,7 @@ package com.example.projectui;
 import static com.example.projectui.Helper.RESTApiRequestURL.GET_TYPEOFFISHLIST;
 
 import android.content.Context;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,11 +12,13 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.example.projectui.ListAdapter.TypeOfFishListAdapter;
 import com.example.projectui.databinding.ManageTypeoffishBinding;
+import com.example.projectui.dto.ParcelableDTO;
 import com.example.projectui.dto.TypeOfFish;
 import com.example.projectui.service.RestApiCallServiceImpl;
 import com.google.android.material.snackbar.BaseTransientBottomBar;
@@ -35,6 +38,9 @@ public class ManageTypeOfFishFragment extends Fragment {
     private ManageTypeoffishBinding binding;
     private Snackbar mySnackbar;
     private ListView listView;
+
+    Bundle bundleFromManageTypeOfFishFragment = new Bundle();
+
     @Override
     public View onCreateView(
             LayoutInflater inflater, ViewGroup container,
@@ -46,6 +52,7 @@ public class ManageTypeOfFishFragment extends Fragment {
 
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         Context currentContext = getActivity().getApplicationContext();
@@ -57,8 +64,13 @@ public class ManageTypeOfFishFragment extends Fragment {
                     .navigate(R.id.action_ManageTypeOfFishFragment_to_RegisterTypeOfFishFragment);
         });
 
+        binding.buttonBACK.setOnClickListener(action -> {
+            NavHostFragment.findNavController(ManageTypeOfFishFragment.this)
+                    .navigate(R.id.action_ManageTypeOfFishFragment_to_AdminPage);
+        });
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     private void initTypeOfFishListView(Context currentContext, View view) {
         RestApiCallServiceImpl restApiCallService = new RestApiCallServiceImpl();
         List<TypeOfFish> typeOfFishList = new ArrayList<>();
@@ -93,10 +105,8 @@ public class ManageTypeOfFishFragment extends Fragment {
                             typeOfFish.setActive(Boolean.valueOf(tofObject.get("active").toString()));
                             typeOfFish.setTypeOfFishName(tofObject.get("typeOfFishName").toString());
 
-                            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-                                byte[] decodedString = Base64.getDecoder().decode(tofObject.get("typeOfFishPictureBase64").toString());
-                                typeOfFish.setTypeOfFishPictureBase64(decodedString);
-                            }
+                            byte[] decodedString = Base64.getDecoder().decode(tofObject.get("typeOfFishPictureBase64").toString());
+                            typeOfFish.setTypeOfFishPictureBase64(decodedString);
                             typeOfFishList.add(typeOfFish);
                         });
 
@@ -115,6 +125,12 @@ public class ManageTypeOfFishFragment extends Fragment {
                 @Override
                 public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                     TypeOfFish typeOfFishSelected = typeOfFishList.get(i);
+                    ParcelableDTO parcelableDTO = new ParcelableDTO(typeOfFishSelected);
+
+                    bundleFromManageTypeOfFishFragment.putParcelable("parcelableDTO", parcelableDTO);
+                    getParentFragmentManager().setFragmentResult("bundleFromManageTypeOfFishFragment", bundleFromManageTypeOfFishFragment);
+                    NavHostFragment.findNavController(ManageTypeOfFishFragment.this)
+                            .navigate(R.id.action_ManageTypeOfFishFragment_to_RegisterTypeOfFishFragment);
                 }
             });
         });

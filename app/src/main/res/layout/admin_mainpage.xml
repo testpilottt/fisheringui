@@ -8,6 +8,20 @@
 
 
     <Button
+        android:id="@+id/button_Logout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="12dp"
+        android:layout_marginTop="144dp"
+        android:text="Logout"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.48"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/buttonManageTypeOfFish"
+        app:layout_constraintVertical_bias="0.043" />
+
+    <Button
         android:id="@+id/buttonManageTypeOfFish"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

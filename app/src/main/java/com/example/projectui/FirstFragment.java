@@ -43,7 +43,6 @@ public class FirstFragment extends Fragment {
 
         binding = FragmentFirstBinding.inflate(inflater, container, false);
         return binding.getRoot();
-
     }
 
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
@@ -76,7 +75,6 @@ public class FirstFragment extends Fragment {
 
                     builder.setPositiveButton("Continue", new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
-                            // Do nothing but close the dialog
                             bundleFromLoginFragment.putString("country", returnJsonBody.get("country").toString());
                             getParentFragmentManager().setFragmentResult("bundleFromLoginFragment", bundleFromLoginFragment);
                             NavHostFragment.findNavController(FirstFragment.this)
@@ -160,7 +158,6 @@ public class FirstFragment extends Fragment {
         }
         return null;
     }
-
 
     @Override
     public void onDestroyView() {

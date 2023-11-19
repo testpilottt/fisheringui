@@ -38,6 +38,7 @@ public class RestApiCallServiceImpl implements RestApiCallService {
             return promise;
 
         } catch (IOException e) {
+            promise.fulfill(null);
             e.printStackTrace();
         }
 

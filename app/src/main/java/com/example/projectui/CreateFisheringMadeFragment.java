@@ -10,6 +10,7 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.location.Location;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,6 +20,7 @@ import android.widget.AdapterView;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentResultListener;
@@ -39,6 +41,8 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 import java.io.ByteArrayOutputStream;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
@@ -114,12 +118,21 @@ public class CreateFisheringMadeFragment extends Fragment {
             binding.buttonRegistercatch.setOnClickListener(v -> {
                 if (validationCheck(view)) {
                     restApiCallService.sendPostRequest(POST_CREATENEWFISHERINGMADE, collectData()).then(returnJsonObject -> {
+                        if (Objects.isNull(returnJsonObject)) {
+                            mySnackbar = Snackbar.make(view, "", BaseTransientBottomBar.LENGTH_LONG);
+                            mySnackbar.setText("Your country has not been configured. Please contact administrator.");
+                            mySnackbar.show();
+                        }
                         String httpResponseCode = returnJsonObject.get("code").toString();
                         if ("404".equals(httpResponseCode)) {
                             mySnackbar = Snackbar.make(view, "", BaseTransientBottomBar.LENGTH_LONG);
                             mySnackbar.setText("Your country has not been configured. Please contact administrator.");
                             mySnackbar.show();
-                        } else if ("201".equals(httpResponseCode)) {
+                        }  else if ("409".equals(httpResponseCode)) {
+                            mySnackbar = Snackbar.make(view, "", BaseTransientBottomBar.LENGTH_LONG);
+                            mySnackbar.setText("Blockchain has been tampered with, try again.");
+                            mySnackbar.show();
+                        }else if ("201".equals(httpResponseCode)) {
                             bundleFromCreateFisheringMadeFragment.putString("country", currentCountry.name());
                             bundleFromCreateFisheringMadeFragment.putLong("memberId", currentMemberId);
 
@@ -189,6 +202,7 @@ public class CreateFisheringMadeFragment extends Fragment {
         binding.inputLocation.setText(stringBuilder.toString());
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     private JSONObject collectData() {
 
         Bitmap bm = ((BitmapDrawable)binding.imageView.getDrawable()).getBitmap();
@@ -196,17 +210,20 @@ public class CreateFisheringMadeFragment extends Fragment {
         bm.compress(Bitmap.CompressFormat.JPEG, 100, baos);
         byte[] imageInByte = baos.toByteArray();
 
+        String weight = binding.inputWeightkg.getText().toString();
+        String countryString = currentCountry.name();
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("location", currentLocationString);
-        jsonObject.put("weightKg", binding.inputWeightkg.getText().toString());
-        jsonObject.put("country", currentCountry.name());
+        jsonObject.put("weightKg", weight);
+        jsonObject.put("country", countryString);
         jsonObject.put("memberId", currentMemberId);
         jsonObject.put("typeOfFishId", currentSelectedTypeOfFish.getTypeOfFishId());
 
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-            String encodedString = Base64.getEncoder().encodeToString(imageInByte);
-            jsonObject.put("pictureOfFish", encodedString);
-        }
+        String encodedString = Base64.getEncoder().encodeToString(imageInByte);
+        jsonObject.put("pictureOfFish", encodedString);
+
+        String data = currentLocationString + weight + countryString + currentMemberId + currentSelectedTypeOfFish.getTypeOfFishId() + encodedString;
+        jsonObject.put("hash", calculateHash(data));
 
         return jsonObject;
     }
@@ -277,5 +294,27 @@ public class CreateFisheringMadeFragment extends Fragment {
                         });
         }
         });
+    }
+
+    public String calculateHash(String text) {
+
+        MessageDigest digest = null;
+        try {
+            digest = MessageDigest.getInstance("SHA-256");
+
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
+        }
+        final StringBuilder hexString = new StringBuilder();
+        final byte[] bytes = digest.digest(text.getBytes());
+
+        for (final byte b : bytes) {
+            String hex = Integer.toHexString(0xff & b);
+            if (hex.length() == 1) {
+                hexString.append('0');
+            }
+            hexString.append(hex);
+        }
+        return hexString.toString();
     }
 }

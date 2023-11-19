@@ -210,7 +210,7 @@ public class CreateFisheringMadeFragment extends Fragment {
         bm.compress(Bitmap.CompressFormat.JPEG, 100, baos);
         byte[] imageInByte = baos.toByteArray();
 
-        String weight = binding.inputWeightkg.getText().toString();
+        Double weight = Double.parseDouble(binding.inputWeightkg.getText().toString());
         String countryString = currentCountry.name();
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("location", currentLocationString);

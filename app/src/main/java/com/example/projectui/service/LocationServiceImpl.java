@@ -25,6 +25,8 @@ import com.google.android.gms.location.LocationSettingsResponse;
 import com.google.android.gms.location.LocationSettingsStatusCodes;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.snackbar.BaseTransientBottomBar;
+import com.google.android.material.snackbar.Snackbar;
 
 import java.util.function.Consumer;
 
@@ -93,7 +95,7 @@ public class LocationServiceImpl extends Activity implements LocationService, Lo
                     Toast.makeText(currentActivity.getApplicationContext(), "Please enable Location", Toast.LENGTH_SHORT).show();
                 }
             } else {
-                requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+                ActivityCompat.requestPermissions(currentActivity, new String[] { Manifest.permission.ACCESS_FINE_LOCATION }, 1);
             }
         }
 

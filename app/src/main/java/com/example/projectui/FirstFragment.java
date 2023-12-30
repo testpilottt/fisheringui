@@ -142,6 +142,9 @@ public class FirstFragment extends Fragment {
             } else if (httpResponseCode.equals("404")) {
                 mySnackbar.setText("Unexpected error, check network and try again!");
                 mySnackbar.show();
+            } else if (httpResponseCode.equals("409")) {
+                mySnackbar.setText("Blockchain has been tampered with, please contact administrator.");
+                mySnackbar.show();
             } else if (httpResponseCode.equals("202")) {
 
                 JSONParser parser = new JSONParser();

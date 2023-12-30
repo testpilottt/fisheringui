@@ -31,13 +31,4 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <Button
-        android:id="@+id/buttonManageMembers"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="14dp"
-        android:layout_marginTop="64dp"
-        android:text="Manage Members"
-        app:layout_constraintStart_toStartOf="@+id/buttonManageTypeOfFish"
-        app:layout_constraintTop_toBottomOf="@+id/buttonManageTypeOfFish" />
 </androidx.constraintlayout.widget.ConstraintLayout>

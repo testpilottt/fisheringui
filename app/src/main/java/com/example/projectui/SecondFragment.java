@@ -47,7 +47,9 @@ public class SecondFragment extends Fragment {
         Context currentContext = getActivity().getApplicationContext();
         bundlePromiseMethod().then(v1 -> {
             //TODO::RAU
-            List<Country> availableCountries = Arrays.asList(Country.values()).stream().filter(country -> Country.MAURITIUS == country).collect(Collectors.toList());
+            List<Country> availableCountries = Arrays.asList(Country.values()).stream()
+//                    .filter(country -> Country.MAURITIUS == country)
+                    .collect(Collectors.toList());
 
             ArrayAdapter arrayAdapter = new ArrayAdapter(currentContext, android.R.layout.simple_list_item_1, availableCountries);
 
